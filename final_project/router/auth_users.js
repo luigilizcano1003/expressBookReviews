@@ -60,17 +60,18 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
   const username = req.session.authorization.username;
   const review = req.body.review;
-  //Object.keys.books[isbn].reviews.forEach(element => {
-  //  if( username == books[isbn].reviews[element].username){
-  //    books[isbn].reviews[element].review = review
-  //  }
-  //  else{
-  //    books[isbn].reviews={(reviews.length)+1:{"username":username,"review":review}}
-  //  }
-  //});
-  if (isbn){
-    books[isbn].reviews={1:{"username": username,"review":review}}
-      }
+  let l = Object.keys(books[isbn]).review.length + 1;
+  Object.keys.books[isbn].reviews.forEach(element => {
+    if( username == books[isbn].reviews[element].username){
+      books[isbn].reviews[element].review = review
+    }
+    else{
+      books[isbn].reviews={Object.keys(books[isbn]).review.length + 1:{"username":username,"review":review}}
+    }
+  });
+  //if (isbn){
+  //  books[isbn].reviews={1:{"username": username,"review":review}}
+  //    }
 
 
   return res.status(200).send(`The username ${username} has done a review for book with ISBN ${isbn}`);
