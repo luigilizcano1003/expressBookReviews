@@ -43,7 +43,7 @@ regd_users.post("/login", (req,res) => {
   if (authenticatedUser(username,password)) {
     let accessToken = jwt.sign({
       data: password
-    }, 'access', { expiresIn: 3600 });
+    }, 'access', { expiresIn: '1h' });
 
     req.session.authorization = {
       accessToken,username
@@ -59,9 +59,12 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   const isbn = req.params.isbn;
   const username = req.session.authorization.username;
-  
+  if (isbn){
+    if(books[isbn]=)
+  }
 
-  return res.status(300).json({message: "Yet to be implemented"});
+
+  return res.status(200).send(`The username is ${username}`);
 });
 
 module.exports.authenticated = regd_users;
