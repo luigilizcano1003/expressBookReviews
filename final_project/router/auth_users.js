@@ -43,7 +43,7 @@ regd_users.post("/login", (req,res) => {
   if (authenticatedUser(username,password)) {
     let accessToken = jwt.sign({
       data: password
-    }, 'access', { expiresIn: 3600 });
+    }, 'access', { expiresIn: '1h' });
 
     req.session.authorization = {
       accessToken,username
@@ -58,10 +58,44 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   const isbn = req.params.isbn;
-  const username = req.session.authorization.username;
-  
+  const review = req.body.review;
+  let l = Object.keys(books[isbn].reviews).length + 1;
+  if(Object.keys(books[isbn].reviews).length > 0){
+    let i = 0;
+    Object.keys(books[isbn].reviews).forEach(element => {      
+      if( req.session.authorization.username == books[isbn].reviews[element].username){
+        books[isbn].reviews[element].review = review;
+        i=i+1;
+      }
+    })
+    if(i==0){
+      Object.assign(books[isbn].reviews,{[l]:{"username":req.session.authorization.username,"review":review}})
+    }
+  }
+  else{
+    Object.assign(books[isbn].reviews,{[l]:{"username":req.session.authorization.username,"review":review}})
+    }
+  return res.status(200).send(`The username ${req.session.authorization.username} has done a review; ${review} for book with ISBN ${isbn}`);
+});
 
-  return res.status(300).json({message: "Yet to be implemented"});
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  const l= Object.keys(books[isbn].reviews).length ;
+  let i=0;
+  Object.keys(books[isbn].reviews).forEach(element =>{
+    if( req.session.authorization.username == books[isbn].reviews[element].username){
+      for(var j = element; j < l;j++){
+        books[isbn].reviews[j] = books[isbn].reviews[j+1]
+      }
+      delete books[isbn].reviews[l];
+      i=i+1;
+      res.status(200).send(`The review of ${req.session.authorization.username} for book with ISBN ${isbn} has been deleted`);
+    }
+  });
+  if(i==0){
+    res.status(208).send(`The username ${req.session.authorization.username} does not have any review for book with ISBN ${isbn}`);
+  }
 });
 
 module.exports.authenticated = regd_users;
