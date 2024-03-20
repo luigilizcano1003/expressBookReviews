@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios').default;
 
 
 public_users.post("/register", (req,res) => {
@@ -27,40 +28,65 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/', async (req, res) => {
   //Write your code here
-  return res.status(200).send(JSON.stringify(books,null,4))
+  try{
+    return res.status(200).send(JSON.stringify(books,null,4))
+  }
+  catch (error){
+    console.error(error);
+    return res.status(404).json({message:"Error"})
+  }
 });
 
+
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn', async (req, res) => {
   //Write your code here
-  const isbn= req.params.isbn;
-  return res.status(200).send(books[isbn]);
+  try{
+    const isbn = await req.params.isbn;
+    return res.status(200).send(JSON.stringify(books[isbn],null,4));
+  }
+  catch (error){
+    console.error(error);
+    return res.status(404).json({message:"Error"})
+  }  
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author', async (req, res) => {
   //Write your code here
-  let key = {};
-  Object.keys(books).forEach(element => {
-    if(req.params.author == books[element].author){
-    key[element]=books[element]
-    }   
-  });  
-  return res.status(200).send(JSON.stringify(key,null,4));
+  try{
+    let key = await {};
+    Object.keys(books).forEach(element => {
+      if(req.params.author == books[element].author){
+      key[element]=books[element]
+      }   
+    });
+    return res.status(200).send(JSON.stringify(key,null,4));
+  }
+  catch (error){
+    console.error(error);
+    return res.status(404).json({message:"Error"})
+  }  
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title',async (req, res) => {
   //Write your code here
-  let key = {};
-  Object.keys(books).forEach(element => {
-    if(req.params.title == books[element].title){
-    key[element]=books[element]
-    }   
-  });  
-  return res.status(200).send(JSON.stringify(key,null,4));
+  try{
+    let key = await {};
+    Object.keys(books).forEach(element => {
+      if(req.params.title == books[element].title){
+      key[element]=books[element]
+      }   
+    });
+    return res.status(200).send(JSON.stringify(key,null,4));
+  }
+  catch (error){
+    console.error(error);
+    return res.status(404).json({message:"Error"})
+  }  
 });
 
 //  Get book review
