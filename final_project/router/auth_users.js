@@ -81,19 +81,24 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 // Delete a book review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
-  const l= Object.keys(books[isbn].reviews).length ;
-  let i=0;
+  const l= Object.keys(books[isbn].reviews).length;
+  let j=0;
   Object.keys(books[isbn].reviews).forEach(element =>{
     if( req.session.authorization.username == books[isbn].reviews[element].username){
-      for(var j = element; j < l;j++){
-        books[isbn].reviews[j] = books[isbn].reviews[j+1]
+      j=element;
       }
-      delete books[isbn].reviews[l];
-      i=i+1;
-      res.status(200).send(`The review of ${req.session.authorization.username} for book with ISBN ${isbn} has been deleted`);
-    }
-  });
-  if(i==0){
+    });    
+  if(j>0){
+    let m=1;
+    delete books[isbn].reviews[j];
+    Object.keys(books[isbn].reviews).forEach(element =>{
+      books[isbn].reviews[m]=books[isbn].reviews[element];
+      m=m+1;
+    })
+    delete books[isbn].reviews[l];
+    res.status(200).send(`The review of ${req.session.authorization.username} for book with ISBN ${isbn} has been deleted`);
+  }
+  if(j==0){
     res.status(208).send(`The username ${req.session.authorization.username} does not have any review for book with ISBN ${isbn}`);
   }
 });
